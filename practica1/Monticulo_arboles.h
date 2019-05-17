@@ -13,6 +13,7 @@ public:
     void insertar(Arbol_caracteres* a);
     Arbol_caracteres* borrar_primero();
     bool terminado();
+    bool vacio();
     void escribir_monticulo(); //debug
     Arbol_caracteres* borrar_primero_v(); //debug
 };
@@ -82,6 +83,11 @@ Arbol_caracteres* Monticulo_arboles::borrar_primero(){
 
 bool Monticulo_arboles:: terminado(){
     return ultimo==0;
+}
+
+bool Monticulo_arboles:: vacio(){
+    cout << "ultimo: "<<ultimo<<endl;
+    return ultimo==-1;
 }
 
 void Monticulo_arboles::escribir_monticulo(){

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <queue>
+#include <bitset>
 
 using namespace std;
 
@@ -18,6 +20,11 @@ public:
     unsigned char getCaracter();
     Arbol_caracteres* getIzq();
     Arbol_caracteres* getDer();
+    void setCaracter (unsigned char c);
+    void setFrecuencia (unsigned int f);
+    void setDer (Arbol_caracteres* d);
+    void setIzq (Arbol_caracteres* i);
+    unsigned int escribir_arbol_fichero (ofstream& f);
     void escribir_arbol(); //debug
 };
 
@@ -67,6 +74,44 @@ Arbol_caracteres* Arbol_caracteres::getDer(){
     return der;
 }
 
+void Arbol_caracteres::setCaracter (unsigned char c){
+    this->caracter=c;
+}
+
+void Arbol_caracteres::setFrecuencia (unsigned int f){
+    this->frecuencia=f;
+}
+
+void Arbol_caracteres::setDer (Arbol_caracteres* d){
+    this->der=d;
+}
+    
+void Arbol_caracteres::setIzq (Arbol_caracteres* i){
+    this->izq=i;
+}
+
+unsigned int Arbol_caracteres::escribir_arbol_fichero (ofstream& f){
+    queue<Arbol_caracteres*>* cola = new queue<Arbol_caracteres*>();
+    cola->push(this);
+    unsigned int i = 0;
+    while(!cola->empty()){
+        Arbol_caracteres* a = cola->front();
+        cola->pop();
+        unsigned char caracter = a->getCaracter();
+        bool esHoja = a->izq == nullptr;
+        f.write(reinterpret_cast<char*>(&caracter), sizeof(unsigned char));
+        f.write(reinterpret_cast<char*>(&esHoja), sizeof(bool));
+        if (a->izq != nullptr){
+            cola->push(a->getIzq());
+        }
+        if (a->der != nullptr){
+            cola->push(a->getDer());
+        }
+        i++;
+    }
+    return i;
+}
+
 void Arbol_caracteres::escribir_arbol(){
     if (der!=nullptr && izq!=nullptr){
         der->escribir_arbol();
@@ -79,6 +124,6 @@ void Arbol_caracteres::escribir_arbol(){
         der->escribir_arbol();
     }
     else{
-        cout << caracter<<": "<<frecuencia<<endl;
+        cout << bitset<8>(caracter)<<": "<<frecuencia<<endl;
     }
 }
