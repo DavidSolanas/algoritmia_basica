@@ -1,3 +1,10 @@
+/**
+ * Fichero p1.cpp
+ * Práctica 1 Algoritmia Básica
+ * Autores: Diego Martínez Baselga      735969
+ *          David Solanas Sanz          738630
+ */
+
 #include <iostream>
 #include <fstream>
 #include "Monticulo_arboles.h"
@@ -19,10 +26,11 @@ int tamanno_fichero(ifstream& f)
 }
 
 /**
- * Lee el contenido del vector de caracteres y almacena
+ * Lee el contenido del vector de caracteres datos y almacena
  * en el vector frecuencias el número de apariciones de 
  * cada carácter en dicho vector. La posición de un carácter
- * en el vector frecuencias vendrá determinado por su código ASCII
+ * en el vector frecuencias vendrá determinado por su código ASCII.
+ * n es el tamaño en Bytes del fichero
  */
 void calcular_frecuencias(unsigned char *datos, unsigned int *frecuencias, int n)
 {
@@ -30,14 +38,15 @@ void calcular_frecuencias(unsigned char *datos, unsigned int *frecuencias, int n
     {
         frecuencias[datos[i]]++;
     }
-    cout << "FRECUENCIAS"<<endl;
-    for (int i = 0; i< 256; i++){
-        if (frecuencias[i]>0){
-            cout << i << ": "<<frecuencias[i]<<endl;
-        }
-    }
 }
 
+/**
+ * monticulo: Monticulo de arboles vacio
+ * frecuencias: Vector en el que cada componente de posición i almacena
+ *              el número de apariciones del caracter con código ASCII i
+ * Devuelve en monticulo el montículo de árboles formado por los árboles de
+ * Huffman de un solo caracter ordenado por número de apariciones
+ */
 void inicializar_monticulo (Monticulo_arboles* monticulo, unsigned int* frecuencias){
     for (int i = 0; i<256; i++){
         if (frecuencias[i] != 0){
@@ -45,7 +54,12 @@ void inicializar_monticulo (Monticulo_arboles* monticulo, unsigned int* frecuenc
         }
     }
 }
-
+/**
+ * frecuencias: Vector en el que cada componente de posición i almacena
+ *              el número de apariciones del caracter con código ASCII i
+ * Devuelve el árbol Huffman  correspondiente al
+ * vector de frecuencias frecuencias
+ */
 Arbol_caracteres* huffman (unsigned int* frecuencias){
     Monticulo_arboles* monticulo = new Monticulo_arboles();
     inicializar_monticulo (monticulo, frecuencias);
@@ -53,7 +67,6 @@ Arbol_caracteres* huffman (unsigned int* frecuencias){
         Arbol_caracteres* a = monticulo->borrar_primero();
         monticulo->insertar(new Arbol_caracteres(a));
     }
-    cout <<"holaaa"<<endl;
     if (monticulo->vacio()){
         return nullptr;
     }
@@ -66,16 +79,18 @@ Arbol_caracteres* huffman (unsigned int* frecuencias){
         return monticulo->borrar_primero();
     }
 }
-//SI ES UN ARBOL DE UN SOLO COMPONENTE NO TIENE POR QUE PETAR
+/**
+ * a: árbol de Huffman
+ * cadena: Código correspondiente a la raíz de a
+ * Devuelve en cada posicion i del vector codigos el codigo Huffman correspondiente
+ * al byte i, dado el arbol a
+ */ 
 void clacular_codigos (Arbol_caracteres* a, string codigos[], string cadena){
     if (a!=nullptr){
-        cout<<"Calculando codigos..."<<endl;
         if (a->getIzq()==nullptr){
-            cout <<"hoja: "<<a->getCaracter()<<endl;
             codigos[a->getCaracter()] = cadena;
         }
         else if (a->getDer() == nullptr){
-            cout <<"entramos aqui no?"<<endl;
             //Caso en el que el árbol está compuesto por solo una letra (un nodo y una hoja)
             clacular_codigos(a->getIzq(), codigos, cadena + '0');
         }
@@ -85,18 +100,20 @@ void clacular_codigos (Arbol_caracteres* a, string codigos[], string cadena){
         }
     }
 }
-
+/**
+ * contenido: contenido en bytes de un fichero
+ * tam: tamaño del fichero en bytes
+ * codigos: códigos Huffman correspondientes a cada Byte perteneciente al fichero
+ * f_salida: fichero de salida en el que escribir el código resultante de codificar
+ *            contenido
+ * Escribe en f_salida el código correspondiente a codificar los primeros tam bytes
+ * de contenido utilizando los codigos del vector codigos
+ */ 
 uint8_t escribir_codigo (unsigned char* contenido, int tam, string codigos[], 
                             ofstream & f_salida){
-    //debug
-    ofstream debug;
-    debug.open("c_codigos");
     string codigo = "";
-    cout <<"A PARTIR DE AQUI"<<endl;
-    cout <<"tam:"<<tam<<endl;
     for (int i = 0; i<tam; i++){
         codigo += codigos[contenido[i]];
-        //cout << "codigo: "<<codigo<<endl;
         if (codigo.length() >= 8){
             char byte;
             for (int j = 0; j<8; j++){
@@ -108,14 +125,13 @@ uint8_t escribir_codigo (unsigned char* contenido, int tam, string codigos[],
                 }
             }
             f_salida.write(&byte, sizeof(byte));
-            //cout << bitset<8> (byte)<<endl;
-            debug << bitset<8> (byte) << endl;
             codigo = codigo.substr(8);
         }
     }
+    //El último byte del código a escribir puede tener un tamaño menor de 8.
+    //Se completa con bits 0 ese byte para poderlo escribir correctamente
     uint8_t resto = 0;
     if (codigo.length()>0){
-        cout<<"tendriamos que entrar aqui"<<endl;
         char byte=0;
         for (int j = 0; j<codigo.length(); j++){
             if(codigo[j] == '0'){
@@ -126,16 +142,20 @@ uint8_t escribir_codigo (unsigned char* contenido, int tam, string codigos[],
             }
         }
         f_salida.write(&byte, sizeof(byte));
-        //cout<<bitset<8>(byte)<<endl;
-        debug<<bitset<8>(byte)<<endl;
         resto = codigo.length();
     }
-    cout<<(int)resto<<endl;
-    debug<<(int)resto<<endl;
     return resto;
 }
 
-//if num_nodos = 0,1,2
+/**
+ * f: Fichero que almacena un arbol Huffman. En el fichero
+ *    se almacena de cada nodo el byte al que corresponde y si es hoja. Los nodos se
+ *    almacenan por niveles y de izquierda a derecha, es decir, primero la raíz,
+ *    después sus hijos (izquierdo y derecho), después los hijos del izquierdo, 
+ *    los del derecho y así sucesivamente.
+ * num_nodos: Número de nodos del árbol
+ * Devuelve el árbol almacenado en el fichero f
+ */
 Arbol_caracteres* leer_arbol (ifstream& f, unsigned int num_nodos){
     Arbol_caracteres* arboles = (Arbol_caracteres *)malloc(num_nodos*sizeof(Arbol_caracteres));
     unsigned char car;
@@ -167,20 +187,23 @@ Arbol_caracteres* leer_arbol (ifstream& f, unsigned int num_nodos){
     }
     return arboles;
 }
-
+/**
+ * arbol: Árbol de Huffman que descifra el código almacenado en codigo
+ * codigo: código Huffman almacenado a nivel de bits
+ * n: tamaño en bytes de codigo
+ * bits_extra: bits añadidos al final de codigo para los bits finales formaran un
+ *             byte
+ * tam_original: tamaño del fichero una vez descifrado
+ * Devuelve un vector de bytes que almacena el contenido de codigo una vez
+ * descifrado
+ */
 unsigned char* descifrar (Arbol_caracteres* arbol, unsigned char* codigo, int n, 
                     uint8_t bits_extra, int tam_original){
-    
-    ofstream debug;
-    debug.open ("d_codigos");
     Arbol_caracteres* aux = arbol;
-    aux->escribir_arbol();
     unsigned char* texto = (unsigned char*) malloc(tam_original);
     int k = 0;
     for (int i = 0; i<n-1; i++){
         char c = codigo[i];
-        cout <<bitset<8>(c)<<endl;
-        debug <<bitset<8>(c)<<endl;
         for (int j = 7; j>=0; j--){
             if((c >> j) & 1){
                 aux=aux->getDer();
@@ -195,11 +218,6 @@ unsigned char* descifrar (Arbol_caracteres* arbol, unsigned char* codigo, int n,
         }
     }
     char c = codigo[n-1];
-    cout << bitset<8> (c)<<endl;
-    debug <<bitset<8>(c)<<endl;
-    cout << (int)bits_extra<<endl;
-    debug << (int)bits_extra<<endl;
-    cout << texto<<endl;
     for (int j = 7; j>7-bits_extra; j--){
         if((c >> j) & 1){
             aux=aux->getDer();
@@ -212,45 +230,55 @@ unsigned char* descifrar (Arbol_caracteres* arbol, unsigned char* codigo, int n,
             aux=arbol;
         }
     }    
-    cout << texto <<endl;
     return texto;
 }
-
+/**
+ * nom_fichero: nombre del fichero a comprimir
+ * Escribe en <nom_fichero>.huf una compresión utilizando códigos Huffman
+ * del fichero de manera que la función descomprimir lo pueda recuperar.
+ * El fichero resultante almacena en el siguiente orden:
+ *     - bits extra añadidos al código para formar el último byte
+ *     - número de nodos del árbol de Huffman
+ *     - tamaño de <nom_fichero>
+ *     - árbol de Huffman, por niveles (empezando por la raíz) y de izquierda a 
+ *       derecha entre nodos del mismo nivel, almacenando de cada nodo el byte al que
+ *       corresponde y si es hoja
+ *     - código Huffman correspondiente al fichero
+ */
 void comprimir(char* nom_fichero){
+        //Lectura del fichero y almacenamiento del contenido en un
+        //vector de una manera eficiente
         ifstream f_entrada;
         f_entrada.open(nom_fichero, ios::binary);
         int tam = tamanno_fichero(f_entrada);
         unsigned char *contenido = (unsigned char *)malloc(tam);
         f_entrada.read((char*)contenido, tam);
         f_entrada.close();
-        // Creación del array e inicialización a 0
+        // Creación del array de frecuencias e inicialización a 0
         unsigned int frecuencias[256] = {0};
         calcular_frecuencias(contenido, frecuencias, tam);
-        cout <<"hola1"<<endl;
+        // Creación del árbol Huffman del fichero
         Arbol_caracteres* arbol = huffman(frecuencias);
+        // Cálculo de código Huffman para cada byte distinto perteneciente al fichero
         string codigos[256];
-        cout <<"hola1"<<endl;
         clacular_codigos(arbol, codigos, "");
-        for (int i = 0; i < 256; i++){
-            if (codigos[i]!=""){
-                cout<<i<<"->"<<codigos[i]<<endl;
-            }
-        }
+        //Escritura del fichero <nom_fichero.huf>
         ofstream f_salida;
         f_salida.open(string(nom_fichero) + ".huf", ios::binary);
         //Espacio para el número de bits añadidos al final que no forman parte
-        //de la cadena original y para el número de nodos del árbol
+        //de la cadena original (que completan el ultimo byte), 
+        //para el número de nodos del árbol y para el tamaño del fichero original
         f_salida.seekp(sizeof(uint8_t)+sizeof(unsigned int)+sizeof(int));
-        cout <<"hola3"<<endl;
         unsigned int num_nodos = 0;
+        //Puede ser un fichero vacío
         if (arbol != nullptr){
-            cout << "hay que entrar aquiiiiiii"<<endl;
-            arbol->escribir_arbol();
+            //Se escribe el árbol
             num_nodos = arbol->escribir_arbol_fichero(f_salida);
         }
-        cout <<"hola4"<<endl;
+        //Se escribe el código
         uint8_t bits_extra = escribir_codigo (contenido, tam, codigos, f_salida);
-        cout <<"hola5"<<endl;
+        //Se escribe el número de bits extra, número de nodos y tamaño del 
+        //fichero original al principio del fichero
         f_salida.seekp(0);
         f_salida.write(reinterpret_cast<char*>(&bits_extra), sizeof(uint8_t));
         f_salida.write(reinterpret_cast<char*>(&num_nodos), sizeof(unsigned int));
@@ -258,7 +286,20 @@ void comprimir(char* nom_fichero){
         f_salida.close();
 }
 
-
+/**
+ * nom_fichero: en formato <fichero_original>.huf. Almacena el árbol de Huffman
+ *              y el código correspondiente de un fichero.
+ * El fichero nom_fichero contiene la siguiente estructura:
+ *     - bits extra añadidos al código para formar el último byte
+ *     - número de nodos del árbol de Huffman
+ *     - tamaño de <nom_fichero>
+ *     - árbol de Huffman, por niveles (empezando por la raíz) y de izquierda a 
+ *       derecha entre nodos del mismo nivel, almacenando de cada nodo el byte al que
+ *       corresponde y si es hoja
+ *     - código Huffman correspondiente al fichero
+ * La función descomprime el fichero nom_fichero y lo escribe en el 
+ * fichero <fichero_original>. 
+ */ 
 void descomprimir (string nom_fichero){
     string nom_salida = nom_fichero.substr(0, nom_fichero.length()-4);
     ifstream f;
@@ -277,13 +318,15 @@ void descomprimir (string nom_fichero){
     f.close();
     unsigned char* contenido = descifrar (arbol, codigo, tam-location, bits_extra, tam_original);
     ofstream f_salida;
-    f_salida.open("hola", ios::binary);
+    f_salida.open(nom_salida, ios::binary);
     f_salida.write((char*)contenido, tam_original);
-    //char* contenido_char = (char*)malloc(contenido.length()+1);
-    //f_salida.write(reinterpret_cast<char*>(contenido_char), sizeof(contenido.length()));
     f_salida.close();
 }
 
+/**
+ * Ejecuta el comando huf. Con la opción -c, genera un fichero comprimido utilizando
+ * códigos Huffman. Con la opción -d, descomprime el fichero generado con -c.
+ */
 int main(int argc, char *argv[])
 {
     if (argc > 2){

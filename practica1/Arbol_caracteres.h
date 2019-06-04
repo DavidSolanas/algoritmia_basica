@@ -1,29 +1,94 @@
+/**
+ * Fichero Arbol_caracteres.h
+ * Práctica 1 Algoritmia Básica
+ * Autores: Diego Martínez Baselga      735969
+ *          David Solanas Sanz          738630
+ */
 #include <iostream>
 #include <queue>
 #include <bitset>
 
 using namespace std;
 
+//Árbol de Huffman
 class Arbol_caracteres
 {
 private:
+    // byte correspondiente con el nodo del árbol (indefinido si no es hoja)
     unsigned char caracter;
+    // frecuencia de aparición de los caracteres del árbol
     unsigned int frecuencia;
+    // hijo derecho
     Arbol_caracteres* der;
+    // hijo izquierdo
     Arbol_caracteres* izq;
 public:
+    /**
+     * Crea el árbol correspondiente al byte a con frecuencia f
+     */
     Arbol_caracteres(unsigned char a, unsigned int f);
+
+    /**
+     * Crea el árbol correspondiente a la fusión del árbol i con el d.
+     * i pasa a ser el hijo izquierdo y d el derecho
+     */
     Arbol_caracteres(Arbol_caracteres* i, Arbol_caracteres* d);
+
+    /**
+     * Devuelve el árbol de caracteres formado por un árbol con hijo i.
+     * Utilizado en ficheros con solo un byte o bytes iguales
+     */
     Arbol_caracteres(Arbol_caracteres* i);
+
+    /**
+     * Libera el espacio del arbol de caracteres
+     */
     ~Arbol_caracteres();
+
+    /**
+     * Devuelve la suma de frecuencias de aparición de los caracteres 
+     * pertenecientes al arbol
+     */
     unsigned int getFrecuencia();
+
+    /**
+     * Devuelve el byte correspondiente a la raíz del árbol (indefinido si no es hoja)
+     */
     unsigned char getCaracter();
+
+    /**
+     * Devuelve el hijo izquierdo de la raíz del árbol
+     */
     Arbol_caracteres* getIzq();
+
+    /**
+     * Devuelve el hijo derecho de la raíz del árbol
+     */
     Arbol_caracteres* getDer();
+
+    /**
+     * Asigna c como byte correspondiente con la raíz del árbol
+     */
     void setCaracter (unsigned char c);
+
+    /**
+     * Asigna f como frecuencia correspondiente con la raíz del árbol
+     */
     void setFrecuencia (unsigned int f);
+
+    /**
+     * Asigna d como hijo derecho de la raíz del árbol
+     */
     void setDer (Arbol_caracteres* d);
+
+    /**
+     * Asigna i como hijo izquierdo de la raíz del árbol
+     */
     void setIzq (Arbol_caracteres* i);
+
+    /**
+     * Asigna d como hijo derecho de la raíz del árbol
+     */
     unsigned int escribir_arbol_fichero (ofstream& f);
     void escribir_arbol(); //debug
 };

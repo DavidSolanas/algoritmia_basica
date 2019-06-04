@@ -1,20 +1,57 @@
+/**
+ * Fichero Monticulo_arboles.h
+ * Práctica 1 Algoritmia Básica
+ * Autores: Diego Martínez Baselga      735969
+ *          David Solanas Sanz          738630
+ */
 #include "Arbol_caracteres.h"
 
-
+//Monticulo de árboles de Huffman
 class Monticulo_arboles
 {
 private:
+    //Posicion del vector en donde está el último puntero a árbol
     int ultimo;
+    //Vector que almacena punteros a árboles desde las posiciones
+    //0 a último. Está ordenado como un montículo por la frecuencia de
+    //aparición del árbol
     Arbol_caracteres* vector[256];
     
 public:
+    /**
+     * Crea un montículo vacío
+     */
     Monticulo_arboles();
-   // ~Monticulo_arboles();
+
+    /**
+     * Añade el árbol a al montículo y lo reordena
+     */
     void insertar(Arbol_caracteres* a);
+
+    /**
+     * Devuelve el elemento de la cima del montículo y lo devuelve
+     */
     Arbol_caracteres* borrar_primero();
+
+    /**
+     * Devuelve si el montículo contiene un solo elemento
+     */
     bool terminado();
+
+    /**
+     * Devuelve si el montículo está vacío
+     */
     bool vacio();
+
+    /**
+     * Escribe por pantalla el montículo de árboles
+     */
     void escribir_monticulo(); //debug
+
+    /**
+     * Devuelve el elemento de la cima del montículo y lo devuelve de una manera
+     * verbosa
+     */
     Arbol_caracteres* borrar_primero_v(); //debug
 };
 
@@ -26,16 +63,9 @@ Monticulo_arboles::Monticulo_arboles()
     }
 }
 
-/*Monticulo_arboles::~Monticulo_arboles()
-{
-    for (int i=0; i<=ultimo; i++){
-        delete(vector[i]);
-    }
-}*/
 
 void Monticulo_arboles:: insertar(Arbol_caracteres* a){
     int i = ++ultimo;
-    //cout<<"ultimo: "<< ultimo<<endl;
     while (i!=0 && vector [(i-1)/2] -> getFrecuencia() > a -> getFrecuencia()){
         vector[i] = vector [(i-1)/2];
         i=(i-1)/2;
@@ -45,33 +75,37 @@ void Monticulo_arboles:: insertar(Arbol_caracteres* a){
 
 Arbol_caracteres* Monticulo_arboles::borrar_primero(){
     if (ultimo == -1){
-        cout << "NOOOOOO TIENE QUE SALIR" << endl;
         return nullptr;
     }
     else{
         Arbol_caracteres* a = vector[0];
-        //cout << "primero:"<<endl;
-       // a->escribir_arbol();
         Arbol_caracteres* b = vector[ultimo--];
-        //cout << "ultimo:"<<endl;
-        //b->escribir_arbol();
         int i = 0;
         bool finalizar = false;
+        //Se toma el último árbol de vector de árboles y se comprueba, empezando en la
+        //raíz, dónde se puede colocar permutándolo cada vez con un hijo de la posición
+        //a comprobar correspondiente.  
         while (ultimo >= 2*i +1 && !finalizar)
         {
+            //Su hijo izquierdo es el último elemento del vector y la frecuencia de este
+            //es menor
             if (ultimo == 2*i + 1 && vector [ultimo]->getFrecuencia() < b->getFrecuencia()){
                 vector[i] = vector[ultimo];
                 i = ultimo;
             }
+            //Su hijo izquierdo tiene una frecuencia menor que la propia y la del hijo
+            //derecho
             else if (vector[2*i+1]->getFrecuencia() < vector[2*i+2]->getFrecuencia() && 
                         vector[2*i+1]->getFrecuencia() < b->getFrecuencia()){
                 vector[i] = vector[2*i+1];
                 i = 2*i+1;
             }
+            //Su hijo derecho tiene una frecuencia menor que la propia
             else if (vector[2*i+2]->getFrecuencia() < b->getFrecuencia()){
                 vector[i] = vector[2*i+2];
                 i = 2*i+2;
             }
+            //No hay que permutar más, frecuencia menor que la de los hijos
             else{
                 finalizar = true;
             }
@@ -86,7 +120,6 @@ bool Monticulo_arboles:: terminado(){
 }
 
 bool Monticulo_arboles:: vacio(){
-    cout << "ultimo: "<<ultimo<<endl;
     return ultimo==-1;
 }
 
@@ -98,67 +131,27 @@ void Monticulo_arboles::escribir_monticulo(){
 
 Arbol_caracteres* Monticulo_arboles::borrar_primero_v(){
     if (ultimo == -1){
-        cout << "NOOOOOO TIENE QUE SALIR" << endl;
         return nullptr;
     }
     else{
         Arbol_caracteres* a = vector[0];
-        cout << "primero:"<<endl;
         a->escribir_arbol();
         Arbol_caracteres* b = vector[ultimo--];
-        cout << "ultimo:"<<endl;
         b->escribir_arbol();
         int i = 0;
         bool finalizar = false;
-        cout << "valor ultimo: "<<ultimo<<endl;
         while (ultimo >= 2*i +1 && !finalizar)
         {
-            cout << "Indice: " <<i << endl;
-            if (i==86){
-                if (vector[2*i+1]==nullptr){
-                    cout<<"primero"<<endl;
-                }
-                else if (vector[2*i+2]==nullptr){
-                    cout<<"segundo"<<endl;
-                }
-                else if (b==nullptr){
-                    cout<<"tercero"<<endl;
-                }
-                else{
-                    ultimo == 2*i + 1 && vector [ultimo]->getFrecuencia() < b->getFrecuencia();
-                    cout<<"ninguno"<<endl;
-                    cout<< vector[2*i+1]->getFrecuencia()<<endl;
-                    cout<<"a"<<endl;
-                    cout<<vector[2*i+2]->getFrecuencia()<<endl;
-                    cout<<"b"<<endl;
-                    cout<<b->getFrecuencia()<<endl;
-                    cout<<"c"<<endl;
-                    vector[2*i+1]->getFrecuencia() < vector[2*i+2]->getFrecuencia(); 
-                    cout<<"d"<<endl;
-                    vector[2*i+1]->getFrecuencia() < b->getFrecuencia();
-                    cout<<"f"<<endl;
-                    vector[2*i+1]->getFrecuencia() < vector[2*i+2]->getFrecuencia() && 
-                    vector[2*i+1]->getFrecuencia() < b->getFrecuencia();
-                    cout<<"ninguno"<<endl;
-                    vector[2*i+2]->getFrecuencia() < b->getFrecuencia();
-                    cout<<"ninguno"<<endl;
-
-
-                }
-            }
             if (ultimo == 2*i + 1 && vector [ultimo]->getFrecuencia() < b->getFrecuencia()){
-                cout<<"primero"<<endl;
                 vector[i] = vector[ultimo];
                 i = ultimo;
             }
             else if (vector[2*i+1]->getFrecuencia() < vector[2*i+2]->getFrecuencia() && 
                         vector[2*i+1]->getFrecuencia() < b->getFrecuencia()){
-                cout<<"segundo"<<endl;
                 vector[i] = vector[2*i+1];
                 i = 2*i+1;
             }
             else if (vector[2*i+2]->getFrecuencia() < b->getFrecuencia()){
-                cout<<"tercero"<<endl;
                 vector[i] = vector[2*i+2];
                 i = 2*i+2;
             }
@@ -166,9 +159,7 @@ Arbol_caracteres* Monticulo_arboles::borrar_primero_v(){
                 finalizar = true;
             }
         }   
-        cout << "salimos del bucle"<<endl;
         vector[i]=b;   
-        cout << "fin de la funcion"<<endl;  
         return a;
     }
 }
