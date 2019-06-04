@@ -20,7 +20,6 @@ public:
     int getEstacionLlegada();
     int getPasajeros();
     int getBeneficio();
-    int getPenalizacion();
     void mostrarPeticion();
     bool operator<(Peticion p);
     bool operator>(Peticion p);
@@ -71,10 +70,6 @@ int Peticion::getPasajeros()
 int Peticion::getBeneficio()
 {
     return num_pasajeros * (estacion_llegada - estacion_salida);
-}
-int Peticion::getPenalizacion()
-{
-    return -getBeneficio();
 }
 void Peticion::mostrarPeticion()
 {
