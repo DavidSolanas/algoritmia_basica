@@ -20,7 +20,10 @@ public:
     int getEstacionLlegada();
     int getPasajeros();
     int getBeneficio();
+    int getPenalizacion();
     void mostrarPeticion();
+    bool operator<(Peticion p);
+    bool operator>(Peticion p);
 };
 
 Peticion::Peticion()
@@ -67,7 +70,11 @@ int Peticion::getPasajeros()
 }
 int Peticion::getBeneficio()
 {
-    return -(num_pasajeros * (estacion_llegada - estacion_salida));
+    return num_pasajeros * (estacion_llegada - estacion_salida);
+}
+int Peticion::getPenalizacion()
+{
+    return -getBeneficio();
 }
 void Peticion::mostrarPeticion()
 {
@@ -75,4 +82,14 @@ void Peticion::mostrarPeticion()
     cout << "Llegada: " << estacion_llegada << ", ";
     cout << "Pasajeros: " << num_pasajeros << ", ";
     cout << "Beneficio: " << getBeneficio() << endl;
+}
+
+bool Peticion::operator<(Peticion p)
+{
+    return this->getBeneficio() < p.getBeneficio();
+}
+
+bool Peticion::operator>(Peticion p)
+{
+    return this->getBeneficio() > p.getBeneficio();
 }
