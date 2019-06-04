@@ -87,10 +87,12 @@ public:
     void setIzq (Arbol_caracteres* i);
 
     /**
-     * Asigna d como hijo derecho de la raíz del árbol
+     * Escribe en f una estructura que permite recuperar el árbol.
+     * Recorre el árbol en anchura de izquierda a derecha, empezando por
+     * la raíz descendiendo por niveles. De cada nodo, escribe el caracter
+     * al que corresponde y si es un nodo hoja
      */
     unsigned int escribir_arbol_fichero (ofstream& f);
-    void escribir_arbol(); //debug
 };
 
 Arbol_caracteres::Arbol_caracteres(unsigned char a, unsigned int f)
@@ -175,20 +177,4 @@ unsigned int Arbol_caracteres::escribir_arbol_fichero (ofstream& f){
         i++;
     }
     return i;
-}
-
-void Arbol_caracteres::escribir_arbol(){
-    if (der!=nullptr && izq!=nullptr){
-        der->escribir_arbol();
-        izq->escribir_arbol();
-    }
-    else if (izq!=nullptr){
-        izq->escribir_arbol();
-    }
-    else if (der!=nullptr){
-        der->escribir_arbol();
-    }
-    else{
-        cout << bitset<8>(caracter)<<": "<<frecuencia<<endl;
-    }
 }

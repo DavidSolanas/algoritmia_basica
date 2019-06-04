@@ -42,17 +42,6 @@ public:
      * Devuelve si el montículo está vacío
      */
     bool vacio();
-
-    /**
-     * Escribe por pantalla el montículo de árboles
-     */
-    void escribir_monticulo(); //debug
-
-    /**
-     * Devuelve el elemento de la cima del montículo y lo devuelve de una manera
-     * verbosa
-     */
-    Arbol_caracteres* borrar_primero_v(); //debug
 };
 
 Monticulo_arboles::Monticulo_arboles()
@@ -121,45 +110,4 @@ bool Monticulo_arboles:: terminado(){
 
 bool Monticulo_arboles:: vacio(){
     return ultimo==-1;
-}
-
-void Monticulo_arboles::escribir_monticulo(){
-    for (int i = 0; i<=ultimo; i++){
-        vector[i]->escribir_arbol();
-    }
-}
-
-Arbol_caracteres* Monticulo_arboles::borrar_primero_v(){
-    if (ultimo == -1){
-        return nullptr;
-    }
-    else{
-        Arbol_caracteres* a = vector[0];
-        a->escribir_arbol();
-        Arbol_caracteres* b = vector[ultimo--];
-        b->escribir_arbol();
-        int i = 0;
-        bool finalizar = false;
-        while (ultimo >= 2*i +1 && !finalizar)
-        {
-            if (ultimo == 2*i + 1 && vector [ultimo]->getFrecuencia() < b->getFrecuencia()){
-                vector[i] = vector[ultimo];
-                i = ultimo;
-            }
-            else if (vector[2*i+1]->getFrecuencia() < vector[2*i+2]->getFrecuencia() && 
-                        vector[2*i+1]->getFrecuencia() < b->getFrecuencia()){
-                vector[i] = vector[2*i+1];
-                i = 2*i+1;
-            }
-            else if (vector[2*i+2]->getFrecuencia() < b->getFrecuencia()){
-                vector[i] = vector[2*i+2];
-                i = 2*i+2;
-            }
-            else{
-                finalizar = true;
-            }
-        }   
-        vector[i]=b;   
-        return a;
-    }
 }
