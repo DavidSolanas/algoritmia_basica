@@ -64,10 +64,12 @@ Arbol_caracteres* huffman (unsigned int* frecuencias){
     Monticulo_arboles* monticulo = new Monticulo_arboles();
     inicializar_monticulo (monticulo, frecuencias);
     if (monticulo->terminado()){
+        //Un solo tipo de byte en todo el fichero
         Arbol_caracteres* a = monticulo->borrar_primero();
         monticulo->insertar(new Arbol_caracteres(a));
     }
     if (monticulo->vacio()){
+        //Fichero vacío
         return nullptr;
     }
     else{
