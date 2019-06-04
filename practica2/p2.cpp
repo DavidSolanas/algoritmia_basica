@@ -30,14 +30,17 @@ bool obtenerDatos(ifstream &f, list<Peticion>* lista)
     return true;
 }
 
+void calcular_solucion (list<Peticion>* lista, bool* solucion){
+    
+}
+
 int main()
 {
     ifstream f_entrada;
     f_entrada.open("datos.txt");
     list<Peticion>* lista = new list<Peticion>();
     obtenerDatos(f_entrada, lista);
-    lista->sort(operator>);
-    for (Peticion p : *lista){
-        p.mostrarPeticion();
-    }
+    lista->sort();
+    bool* solucion = (bool*)malloc(size(*lista));
+    calcular_solucion(lista, solucion);
 }

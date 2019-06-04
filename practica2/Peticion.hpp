@@ -81,10 +81,10 @@ void Peticion::mostrarPeticion()
 
 bool Peticion::operator<(Peticion p)
 {
-    return this->getPenalizacion() < p.getPenalizacion();
+    return this->getBeneficio() > p.getBeneficio();
 }
 
 bool Peticion::operator>(Peticion p)
 {
-    return this->getPenalizacion() > p.getPenalizacion();
+    return this->getBeneficio() < p.getBeneficio();
 }
