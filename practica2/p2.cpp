@@ -1,11 +1,12 @@
 #include <queue>
 #include <iostream>
 #include <fstream>
+#include <list>
 #include "Peticion.hpp"
 
 using namespace std;
 
-bool obtenerDatos(ifstream &f)
+bool obtenerDatos(ifstream &f, list<Peticion>* lista)
 {
     //Leer primera línea
     int n, m, p; //n -> capacidad del tren, m -> número de estaciones, p -> número de pedidos
@@ -23,7 +24,7 @@ bool obtenerDatos(ifstream &f)
         f >> salida >> llegada >> pasajeros;
         cout << salida << " " << llegada << " " << pasajeros << endl;
         P.setPeticion(salida, llegada, pasajeros);
-        P.mostrarPeticion();
+        lista->push_back(P);
         i++;
     }
     return true;
@@ -31,9 +32,12 @@ bool obtenerDatos(ifstream &f)
 
 int main()
 {
-    priority_queue<int> q;
     ifstream f_entrada;
     f_entrada.open("datos.txt");
-    obtenerDatos(f_entrada);
-    //obtenerDatos(f_entrada);
+    list<Peticion>* lista = new list<Peticion>();
+    obtenerDatos(f_entrada, lista);
+    lista->sort(operator>);
+    for (Peticion p : *lista){
+        p.mostrarPeticion();
+    }
 }
