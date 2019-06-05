@@ -69,7 +69,7 @@ int Peticion::getPasajeros()
 }
 int Peticion::getBeneficio()
 {
-    return num_pasajeros * (estacion_llegada - estacion_salida);
+    return -num_pasajeros * (estacion_llegada - estacion_salida);
 }
 void Peticion::mostrarPeticion()
 {
@@ -81,10 +81,10 @@ void Peticion::mostrarPeticion()
 
 bool Peticion::operator<(Peticion p)
 {
-    return this->getBeneficio() > p.getBeneficio();
+    return this->getBeneficio()/this->getPasajeros() < p.getBeneficio()/p.getPasajeros();
 }
 
 bool Peticion::operator>(Peticion p)
 {
-    return this->getBeneficio() < p.getBeneficio();
+    return this->getBeneficio()/this->getPasajeros() > p.getBeneficio()/p.getPasajeros();
 }
