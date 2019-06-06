@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 //Árbol de Huffman
 class ArbolPeticiones
 {
@@ -19,11 +18,12 @@ private:
     int coste;
     int estimacion;
     int id_peticion;
-    vector<bool> escogidos;
+    vector<bool> descartados;
     // hijo derecho
-    ArbolPeticiones* der;
+    ArbolPeticiones *der;
     // hijo izquierdo
-    ArbolPeticiones* izq;
+    ArbolPeticiones *izq;
+
 public:
     ArbolPeticiones(int id, int size);
 
@@ -35,13 +35,13 @@ public:
      * Crea el árbol correspondiente a la fusión del árbol i con el d.
      * i pasa a ser el hijo izquierdo y d el derecho
      */
-    ArbolPeticiones(ArbolPeticiones* i, ArbolPeticiones* d);
+    ArbolPeticiones(ArbolPeticiones *i, ArbolPeticiones *d);
 
     /**
      * Devuelve el árbol de caracteres formado por un árbol con hijo i.
      * Utilizado en ficheros con solo un byte o bytes iguales
      */
-    ArbolPeticiones(ArbolPeticiones* i);
+    ArbolPeticiones(ArbolPeticiones *i);
 
     /**
      * Libera el espacio del arbol de caracteres
@@ -56,133 +56,147 @@ public:
     unsigned int getId_peticion();
     int getCapacidad();
     int getEstimacion();
-    vector<bool> getEscogidos();
+    vector<bool> getDescartados();
 
     /**
      * Devuelve el hijo izquierdo de la raíz del árbol
      */
-    ArbolPeticiones* getIzq();
+    ArbolPeticiones *getIzq();
 
     /**
      * Devuelve el hijo derecho de la raíz del árbol
      */
-    ArbolPeticiones* getDer();
+    ArbolPeticiones *getDer();
 
     /**
      * Asigna c como byte correspondiente con la raíz del árbol
      */
-    void setCoste (int c);
+    void setCoste(int c);
 
     /**
      * Asigna f como frecuencia correspondiente con la raíz del árbol
      */
-    void setEstimacion (int e);
-    void setId_peticion (unsigned int i);
+    void setEstimacion(int e);
+    void setId_peticion(unsigned int i);
     void setCapacidad(int e);
-    void setEscogidos(vector<bool> e);
-    void cambiarEscogido(int indice, bool valor);
+    void setDescartados(vector<bool> e);
+    void descartar(int indice);
 
     /**
      * Asigna d como hijo derecho de la raíz del árbol
      */
-    void setDer (ArbolPeticiones* d);
+    void setDer(ArbolPeticiones *d);
 
     /**
      * Asigna i como hijo izquierdo de la raíz del árbol
      */
-    void setIzq (ArbolPeticiones* i);
+    void setIzq(ArbolPeticiones *i);
 
     /**
      * Asigna d como hijo derecho de la raíz del árbol
      */
-    unsigned int escribir_arbol_fichero (ofstream& f);
+    unsigned int escribir_arbol_fichero(ofstream &f);
     void escribir_arbol(); //debug
 };
 
-ArbolPeticiones::ArbolPeticiones(int id, int size){
+ArbolPeticiones::ArbolPeticiones(int id, int size)
+{
     this->coste = INT32_MAX;
     this->estimacion = INT32_MAX;
     this->id_peticion = id;
     this->der = nullptr;
     this->izq = nullptr;
-    this->escogidos.resize(size);
-    
+    this->descartados.resize(size);
 }
 
 ArbolPeticiones::~ArbolPeticiones()
 {
-    if (izq!=nullptr){
+    if (izq != nullptr)
+    {
         //delete(izq);
         //delete(der);
     }
 }
 
-int ArbolPeticiones:: getCoste() const{
+int ArbolPeticiones::getCoste() const
+{
     return coste;
 }
 
-int ArbolPeticiones:: getCapacidad(){
+int ArbolPeticiones::getCapacidad()
+{
     return capacidad_restante;
 }
 
-unsigned int ArbolPeticiones::getId_peticion(){
+unsigned int ArbolPeticiones::getId_peticion()
+{
     return id_peticion;
 }
 
-int ArbolPeticiones::getEstimacion(){
+int ArbolPeticiones::getEstimacion()
+{
     return estimacion;
 }
 
-vector<bool> ArbolPeticiones::getEscogidos(){
-    return escogidos;
+vector<bool> ArbolPeticiones::getDescartados()
+{
+    return descartados;
 }
 
-ArbolPeticiones* ArbolPeticiones::getIzq(){
+ArbolPeticiones *ArbolPeticiones::getIzq()
+{
     return izq;
 }
 
-ArbolPeticiones* ArbolPeticiones::getDer(){
+ArbolPeticiones *ArbolPeticiones::getDer()
+{
     return der;
 }
 
-
-
-void ArbolPeticiones::setDer (ArbolPeticiones* d){
-    this->der=d;
-}
-    
-void ArbolPeticiones::setIzq (ArbolPeticiones* i){
-    this->izq=i;
+void ArbolPeticiones::setDer(ArbolPeticiones *d)
+{
+    this->der = d;
 }
 
-void ArbolPeticiones::setCoste (int c){
-    this->coste=c;
+void ArbolPeticiones::setIzq(ArbolPeticiones *i)
+{
+    this->izq = i;
 }
 
-void ArbolPeticiones::setEstimacion (int e){
-    this->estimacion=e;
+void ArbolPeticiones::setCoste(int c)
+{
+    this->coste = c;
 }
 
-void ArbolPeticiones::setId_peticion (unsigned int i){
-    this->id_peticion=i;
+void ArbolPeticiones::setEstimacion(int e)
+{
+    this->estimacion = e;
 }
 
-void ArbolPeticiones::setCapacidad(int e){
+void ArbolPeticiones::setId_peticion(unsigned int i)
+{
+    this->id_peticion = i;
+}
+
+void ArbolPeticiones::setCapacidad(int e)
+{
     this->capacidad_restante = e;
 }
 
-void ArbolPeticiones::setEscogidos(vector<bool> v){
-    this->escogidos = v;
+void ArbolPeticiones::setDescartados(vector<bool> v)
+{
+    this->descartados = v;
 }
 
-void ArbolPeticiones::cambiarEscogido(int indice, bool valor){
-    this->escogidos[indice] = valor;
+void ArbolPeticiones::descartar(int indice)
+{
+    this->descartados[indice] = true;
 }
 
 struct LessThanCost
 {
-  bool operator()(const ArbolPeticiones& lhs, const ArbolPeticiones& rhs) const
-  {
-    return lhs.getCoste() > rhs.getCoste();
-  }
+    bool operator()(const ArbolPeticiones &lhs, const ArbolPeticiones &rhs) const
+    {
+        return lhs.getCoste() > rhs.getCoste();
+    }
 };

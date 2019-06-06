@@ -81,10 +81,10 @@ void Peticion::mostrarPeticion()
 
 bool Peticion::operator<(Peticion p)
 {
-    return this->getBeneficio()/this->getPasajeros() < p.getBeneficio()/p.getPasajeros();
+    return this->getBeneficio() / this->getPasajeros() < p.getBeneficio() / p.getPasajeros();
 }
 
 bool Peticion::operator>(Peticion p)
 {
-    return this->getBeneficio()/this->getPasajeros() > p.getBeneficio()/p.getPasajeros();
+    return this->getBeneficio() / this->getPasajeros() > p.getBeneficio() / p.getPasajeros();
 }
