@@ -1,9 +1,9 @@
-/**
- * Fichero NodoPeticion.h
- * Práctica 1 Algoritmia Básica
+/*********************************************************
+ * Fichero NodoPeticion.hpp
+ * Práctica 2 Algoritmia Básica
  * Autores: Diego Martínez Baselga      735969
  *          David Solanas Sanz          738630
- */
+ *********************************************************/
 #include <vector>
 
 using namespace std;

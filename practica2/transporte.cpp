@@ -1,3 +1,10 @@
+/*********************************************************
+ * Fichero transporte.cpp
+ * Práctica 2 Algoritmia Básica
+ * Autores: Diego Martínez Baselga      735969
+ *          David Solanas Sanz          738630
+ *********************************************************/
+
 #include <queue>
 #include <fstream>
 #include <algorithm>
@@ -164,7 +171,7 @@ int funcion_cota(vector<Peticion> *v, unsigned int objeto,
 
 bool es_factible(int capacidad_total, vector<int> capacidad_ocupada)
 {
-    for (auto &&i : capacidad_ocupada)
+    for (bool i : capacidad_ocupada)
     {
         if (i > capacidad_total)
             return false;
@@ -256,7 +263,7 @@ int ramificacion_poda(NodoPeticion a, int capacidad_total, vector<Peticion> *v, 
     return -U;
 }
 
-void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_paradas)
+void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_paradas, ofstream &f)
 {
     clock_t t_start = clock();
     int ben = 0;
@@ -270,26 +277,35 @@ void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_para
         ben = ramificacion_poda(ap, capacidad_total, vector, n_paradas);
     }
     clock_t t_end = clock();
-    cout << "Beneficio total: " << ben << endl;
-    cout << "Calculado en " << (double)(t_end - t_start) / CLOCKS_PER_SEC << " segundos" << endl
-         << endl;
+    f << ben << " " << (double)(t_end - t_start) / CLOCKS_PER_SEC << endl;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-
-    ifstream f_entrada;
-    f_entrada.open("datos.txt");
-    vector<Peticion> *v = new vector<Peticion>();
-    int capacidad_tren, n_paradas;
-    clock_t t1 = clock();
-    while (obtenerDatos(f_entrada, v, capacidad_tren, n_paradas))
+    if (argc == 3)
     {
-        sort(v->begin(), v->end());
-        calcular_solucion(v, capacidad_tren, n_paradas);
-        v->clear();
+        ifstream f_entrada;
+        ofstream f_salida;
+        f_entrada.open(string(argv[1]));
+        if (f_entrada.is_open())
+        {
+            f_salida.open(string(argv[2]));
+            vector<Peticion> *v = new vector<Peticion>();
+            int capacidad_tren, n_paradas;
+            while (obtenerDatos(f_entrada, v, capacidad_tren, n_paradas))
+            {
+                sort(v->begin(), v->end());
+                calcular_solucion(v, capacidad_tren, n_paradas, f_salida);
+                v->clear();
+            }
+        }
+        else
+        {
+            cerr << "No se ha podido abrir el fichero " << argv[1] << endl;
+        }
     }
-    clock_t t2 = clock();
-    cout << "Colección de pruebas calculadas en " << (double)(t2 - t1) / CLOCKS_PER_SEC << " segundos" << endl
-         << endl;
+    else
+    {
+        cerr << "Numero de argumentos incorrecto: transporte <nombre_fichero_entrada> <nombre_fichero_salida>" << endl;
+    }
 }

@@ -1,3 +1,10 @@
+/*********************************************************
+ * Fichero Peticion.hpp
+ * Práctica 2 Algoritmia Básica
+ * Autores: Diego Martínez Baselga      735969
+ *          David Solanas Sanz          738630
+ *********************************************************/
+
 #include <iostream>
 
 using namespace std;
