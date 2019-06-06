@@ -5,8 +5,7 @@
  *          David Solanas Sanz          738630
  */
 #include <iostream>
-#include <queue>
-#include <bitset>
+#include <vector>
 
 using namespace std;
 
@@ -18,21 +17,19 @@ private:
     int capacidad_restante;
     // frecuencia de aparición de los caracteres del árbol
     int coste;
-    int coste_sin_anyadir;
     int estimacion;
-    int estimacion_sin_anyadir;
     int id_peticion;
+    vector<bool> escogidos;
     // hijo derecho
     ArbolPeticiones* der;
     // hijo izquierdo
     ArbolPeticiones* izq;
 public:
-    ArbolPeticiones(int id);
+    ArbolPeticiones(int id, int size);
 
     /**
      * Crea el árbol correspondiente al byte a con frecuencia f
      */
-    ArbolPeticiones(unsigned char a, unsigned int f);
 
     /**
      * Crea el árbol correspondiente a la fusión del árbol i con el d.
@@ -59,8 +56,7 @@ public:
     unsigned int getId_peticion();
     int getCapacidad();
     int getEstimacion();
-    int getEstimacion_Sin_Anyadir();
-    int getCoste_Sin_Anyadir();
+    vector<bool> getEscogidos();
 
     /**
      * Devuelve el hijo izquierdo de la raíz del árbol
@@ -83,8 +79,8 @@ public:
     void setEstimacion (int e);
     void setId_peticion (unsigned int i);
     void setCapacidad(int e);
-    void setEstimacion_Sin_Anyadir(int e);
-    void setCoste_Sin_Anyadir(int c);
+    void setEscogidos(vector<bool> e);
+    void cambiarEscogido(int indice, bool valor);
 
     /**
      * Asigna d como hijo derecho de la raíz del árbol
@@ -103,12 +99,13 @@ public:
     void escribir_arbol(); //debug
 };
 
-ArbolPeticiones::ArbolPeticiones(int id){
+ArbolPeticiones::ArbolPeticiones(int id, int size){
     this->coste = INT32_MAX;
     this->estimacion = INT32_MAX;
     this->id_peticion = id;
     this->der = nullptr;
     this->izq = nullptr;
+    this->escogidos.resize(size);
     
 }
 
@@ -136,12 +133,8 @@ int ArbolPeticiones::getEstimacion(){
     return estimacion;
 }
 
-int ArbolPeticiones::getEstimacion_Sin_Anyadir(){
-    return estimacion_sin_anyadir;
-}
-
-int ArbolPeticiones::getCoste_Sin_Anyadir(){
-    return coste_sin_anyadir;
+vector<bool> ArbolPeticiones::getEscogidos(){
+    return escogidos;
 }
 
 ArbolPeticiones* ArbolPeticiones::getIzq(){
@@ -178,14 +171,13 @@ void ArbolPeticiones::setCapacidad(int e){
     this->capacidad_restante = e;
 }
 
-void ArbolPeticiones::setCoste_Sin_Anyadir(int c){
-    this->coste_sin_anyadir = c;
+void ArbolPeticiones::setEscogidos(vector<bool> v){
+    this->escogidos = v;
 }
 
-void ArbolPeticiones::setEstimacion_Sin_Anyadir(int e){
-    this->estimacion_sin_anyadir = e;
+void ArbolPeticiones::cambiarEscogido(int indice, bool valor){
+    this->escogidos[indice] = valor;
 }
-
 
 struct LessThanCost
 {

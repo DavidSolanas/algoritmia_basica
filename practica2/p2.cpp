@@ -32,23 +32,10 @@ bool obtenerDatos(ifstream &f, vector<Peticion>* vector, int& n)
     return true;
 }
 
-ArbolPeticiones* crear_arbol(vector<Peticion>* vector, int peticion)
-{
-    if(peticion != vector->size()){
-        ArbolPeticiones* izq = crear_arbol(vector,peticion+1);
-        ArbolPeticiones* dch = crear_arbol(vector,peticion+1);
-        ArbolPeticiones* ap = new ArbolPeticiones(peticion);
-        ap->setIzq(izq);
-        ap->setDer(dch);
-        return ap;
-    } else
-    {
-        return nullptr;
-    }
-    
-}
 
-int funcion_poda(vector<Peticion>* vector, unsigned int objeto, unsigned int capacidad_ocupada, unsigned int capacidad_total, int U){
+
+int funcion_poda(vector<Peticion>* vector, unsigned int objeto, unsigned int capacidad_ocupada, 
+            unsigned int capacidad_total, int U){
     int poda = U;
     int c = capacidad_ocupada;
     for (int i = objeto; i < vector->size(); i++)
@@ -61,7 +48,8 @@ int funcion_poda(vector<Peticion>* vector, unsigned int objeto, unsigned int cap
     return poda;
 }
 
-int funcion_cota(vector<Peticion>* vector, unsigned int objeto, unsigned int capacidad_ocupada, unsigned int capacidad_total, int ben){
+int funcion_cota(vector<Peticion>* vector, unsigned int objeto, unsigned int capacidad_ocupada, 
+            unsigned int capacidad_total, int ben){
     int beneficio = ben;
     int c = capacidad_ocupada;
     if (c == capacidad_total || objeto == vector->size())
@@ -105,7 +93,7 @@ void ramificacion_poda(ArbolPeticiones a, int capacidad_total, vector<Peticion>*
             //Expandir nodo (generar 2 hijos, izq cogiendo la petición, dch sin coger la petición)
             int capacidad_tras_anyadir = actual.getCapacidad() - v->at(nivel).getPasajeros();
             nivel = actual.getId_peticion() + 1;
-            ArbolPeticiones izq(nivel); //Se añade la petición del nodo actual
+            ArbolPeticiones izq(nivel,v->size()); //Se añade la petición del nodo actual
             izqFactible = capacidad_tras_anyadir > 0;
             cout << "U global: " << U << endl;
             cout << "U nodo: " << actual.getEstimacion() << endl;
@@ -113,22 +101,18 @@ void ramificacion_poda(ArbolPeticiones a, int capacidad_total, vector<Peticion>*
             if(izqFactible){
                 izq.setCoste(actual.getCoste());
                 izq.setEstimacion(actual.getEstimacion());
-                izq.setCoste_Sin_Anyadir(funcion_cota(v,nivel+1,capacidad_tras_anyadir,capacidad_total,actual.getCoste_Sin_Anyadir()));
-                izq.setEstimacion_Sin_Anyadir(funcion_poda(v,nivel+1,capacidad_tras_anyadir,capacidad_total,actual.getEstimacion_Sin_Anyadir()));
                 izq.setCapacidad(capacidad_tras_anyadir);
             }
             
-            ArbolPeticiones dch(nivel); //No se añade la petición del nodo actual
-            dch.setCoste(funcion_cota(v,nivel,actual.getCapacidad(),capacidad_total,actual.getCoste_Sin_Anyadir()));
-            dch.setEstimacion(funcion_poda(v,nivel,actual.getCapacidad(),capacidad_total,actual.getEstimacion_Sin_Anyadir()));
-            dch.setCoste_Sin_Anyadir(funcion_cota(v,nivel+1,actual.getCapacidad(),capacidad_total,actual.getCoste_Sin_Anyadir()));
-            dch.setEstimacion_Sin_Anyadir(funcion_poda(v,nivel+1,actual.getCapacidad(),capacidad_total,actual.getEstimacion_Sin_Anyadir()));
+            ArbolPeticiones dch(nivel,v->size()); //No se añade la petición del nodo actual
+            dch.setCoste(1);
+            dch.setEstimacion(1);
             dch.setCapacidad(actual.getCapacidad());
-            cout << actual.getEstimacion_Sin_Anyadir() << endl << endl;
-            actual.setIzq(&izq);
-            actual.setDer(&dch);
+            cout << dch.getCoste() << endl << endl;
+
+
             //Añadir nodos a la cola de prioridades si cumplen restricciones
-            if (nivel == v->size() -1)
+            if (nivel == v->size() - 1)
             {
                 if(izqFactible)
                 {
@@ -177,11 +161,9 @@ void ramificacion_poda(ArbolPeticiones a, int capacidad_total, vector<Peticion>*
 
 void calcular_solucion (vector<Peticion>* vector, bool* solucion, int capacidad_total){
     //Crear el árbol
-    ArbolPeticiones ap(-1);
+    ArbolPeticiones ap(-1,vector->size());
     ap.setEstimacion(funcion_poda(vector,0,0,capacidad_total,0));
     ap.setCoste(funcion_cota(vector,0,0,capacidad_total,0));
-    ap.setCoste_Sin_Anyadir(funcion_cota(vector,1,0,capacidad_total,0));
-    ap.setEstimacion_Sin_Anyadir(funcion_poda(vector,1,0,capacidad_total,0));
     cout << funcion_poda(vector,1,0,capacidad_total,0) << endl;
     ap.setCapacidad(capacidad_total);
     ramificacion_poda(ap,capacidad_total,vector);
