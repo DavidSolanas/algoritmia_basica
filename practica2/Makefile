@@ -11,7 +11,7 @@ RM = /bin/rm -f  # para limpiar
 CC = g++         # compilador
 #---------------------------------------------------------
 # compilación
-CPPFLAGS=-I. -O3 -std=c++11 # opciones compilación
+CPPFLAGS=-std=c++11 -O3 # opciones compilación
 #---------------------------------------------------------
 # vars
 PROG = transporte

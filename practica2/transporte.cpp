@@ -14,6 +14,16 @@
 
 using namespace std;
 
+/**
+ * Obtiene los datos del fichero de entrada. La primera línea corresponde con 3 enteros,
+ * el primero la capacidad total del tren (n), el segundo el número de estaciones (m) y el
+ * tercero el número de pedidos (p). A partir de esa línea las p siguientes líneas están
+ * compuestas de tres enteros. El primero indica la estación de salida (salida), el segundo
+ * la estación de llegada (llegada) y el último el número de pasajeros de ese pedido (pasajeros).
+ * Si al leer la primera línea se lee la secuencia 0 0 0, indica que no hay más datos que leer y
+ * devuelve FALSE, en caso contrario devuelve TRUE otra recogida de datos para otro problema distinto.
+ * Las peticiones se van guardando en el vector [vector].
+ */
 bool obtenerDatos(ifstream &f, vector<Peticion> *vector, int &n, int &m)
 {
     //n -> capacidad del tren, m -> número de estaciones, p -> número de pedidos
@@ -22,6 +32,7 @@ bool obtenerDatos(ifstream &f, vector<Peticion> *vector, int &n, int &m)
     f >> n >> m >> p;
     if (n == 0 && m == 0 && p == 0)
     {
+        //No hay más datos en el fichero
         return false;
     }
     int i = 1;
@@ -29,11 +40,15 @@ bool obtenerDatos(ifstream &f, vector<Peticion> *vector, int &n, int &m)
     Peticion P;
     while (i <= p)
     {
+        //Leer petición
         f >> salida >> llegada >> pasajeros;
+        //Crear petición
         P.setPeticion(salida, llegada, pasajeros);
+        //Guardar petición
         vector->push_back(P);
         i++;
     }
+    //Hay más datos en el fichero
     return true;
 }
 
@@ -171,7 +186,7 @@ int funcion_cota(vector<Peticion> *v, unsigned int objeto,
 
 bool es_factible(int capacidad_total, vector<int> capacidad_ocupada)
 {
-    for (bool i : capacidad_ocupada)
+    for (auto &&i : capacidad_ocupada)
     {
         if (i > capacidad_total)
             return false;
