@@ -16,13 +16,14 @@ public:
     void setEstacionSalida(int salida);
     void setEstacionLlegada(int llegada);
     void setPasajeros(int pasajeros);
-    int getEstacionSalida();
-    int getEstacionLlegada();
-    int getPasajeros();
-    int getBeneficio();
+    int getEstacionSalida() const;
+    int getEstacionLlegada() const;
+    int getPasajeros() const;
+    int getDistancia() const;
+    int getBeneficio() const;
     void mostrarPeticion();
-    bool operator<(Peticion p);
-    bool operator>(Peticion p);
+    bool operator<(const Peticion &p);
+    bool operator>(const Peticion &p);
 };
 
 Peticion::Peticion()
@@ -55,21 +56,25 @@ void Peticion::setPasajeros(int pasajeros)
 {
     num_pasajeros = pasajeros;
 }
-int Peticion::getEstacionSalida()
+int Peticion::getEstacionSalida() const
 {
     return estacion_salida;
 }
-int Peticion::getEstacionLlegada()
+int Peticion::getEstacionLlegada() const
 {
     return estacion_llegada;
 }
-int Peticion::getPasajeros()
+int Peticion::getDistancia() const
+{
+    return this->estacion_llegada - this->estacion_salida;
+}
+int Peticion::getPasajeros() const
 {
     return num_pasajeros;
 }
-int Peticion::getBeneficio()
+int Peticion::getBeneficio() const
 {
-    return -num_pasajeros * (estacion_llegada - estacion_salida);
+    return -num_pasajeros * (estacion_llegada - estacion_salida + 1);
 }
 void Peticion::mostrarPeticion()
 {
@@ -79,12 +84,17 @@ void Peticion::mostrarPeticion()
     cout << "Beneficio: " << getBeneficio() << endl;
 }
 
-bool Peticion::operator<(Peticion p)
+bool Peticion::operator<(const Peticion &p)
 {
-    return this->getBeneficio() / this->getPasajeros() < p.getBeneficio() / p.getPasajeros();
+    return this->getPasajeros() / this->getDistancia() > p.getPasajeros() / p.getDistancia();
 }
 
-bool Peticion::operator>(Peticion p)
+bool Peticion::operator>(const Peticion &p)
 {
-    return this->getBeneficio() / this->getPasajeros() > p.getBeneficio() / p.getPasajeros();
+    return this->getPasajeros() / this->getDistancia() > p.getPasajeros() / p.getDistancia();
+}
+
+bool operator<(const Peticion &p1, const Peticion &p2)
+{
+    return p1.getPasajeros() / p1.getDistancia() < p2.getPasajeros() / p2.getDistancia();
 }

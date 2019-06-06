@@ -13,7 +13,7 @@ using namespace std;
 class ArbolPeticiones
 {
 private:
-    int capacidad_restante;
+    vector<int> capacidad_restante;
     // frecuencia de aparición de los caracteres del árbol
     int coste;
     int estimacion;
@@ -25,7 +25,7 @@ private:
     ArbolPeticiones *izq;
 
 public:
-    ArbolPeticiones(int id, int size);
+    ArbolPeticiones(int id, int size, int n_paradas);
 
     /**
      * Crea el árbol correspondiente al byte a con frecuencia f
@@ -53,8 +53,8 @@ public:
      * pertenecientes al arbol
      */
     int getCoste() const;
-    unsigned int getId_peticion();
-    int getCapacidad();
+    int getId_peticion();
+    vector<int> getCapacidad();
     int getEstimacion();
     vector<bool> getDescartados();
 
@@ -78,7 +78,7 @@ public:
      */
     void setEstimacion(int e);
     void setId_peticion(unsigned int i);
-    void setCapacidad(int e);
+    void setCapacidad(vector<int> v);
     void setDescartados(vector<bool> e);
     void descartar(int indice);
 
@@ -99,7 +99,7 @@ public:
     void escribir_arbol(); //debug
 };
 
-ArbolPeticiones::ArbolPeticiones(int id, int size)
+ArbolPeticiones::ArbolPeticiones(int id, int size, int n_paradas)
 {
     this->coste = INT32_MAX;
     this->estimacion = INT32_MAX;
@@ -107,6 +107,7 @@ ArbolPeticiones::ArbolPeticiones(int id, int size)
     this->der = nullptr;
     this->izq = nullptr;
     this->descartados.resize(size);
+    this->capacidad_restante.resize(n_paradas);
 }
 
 ArbolPeticiones::~ArbolPeticiones()
@@ -123,12 +124,12 @@ int ArbolPeticiones::getCoste() const
     return coste;
 }
 
-int ArbolPeticiones::getCapacidad()
+vector<int> ArbolPeticiones::getCapacidad()
 {
     return capacidad_restante;
 }
 
-unsigned int ArbolPeticiones::getId_peticion()
+int ArbolPeticiones::getId_peticion()
 {
     return id_peticion;
 }
@@ -178,9 +179,9 @@ void ArbolPeticiones::setId_peticion(unsigned int i)
     this->id_peticion = i;
 }
 
-void ArbolPeticiones::setCapacidad(int e)
+void ArbolPeticiones::setCapacidad(vector<int> v)
 {
-    this->capacidad_restante = e;
+    this->capacidad_restante = v;
 }
 
 void ArbolPeticiones::setDescartados(vector<bool> v)
