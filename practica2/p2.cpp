@@ -1,18 +1,17 @@
 #include <queue>
-#include <iostream>
 #include <fstream>
-#include <vector>
 #include <algorithm>
 #include <ctime>
 #include "Peticion.hpp"
-#include "ArbolPeticiones.hpp"
+#include "NodoPeticion.hpp"
 
 using namespace std;
 
 bool obtenerDatos(ifstream &f, vector<Peticion> *vector, int &n, int &m)
 {
+    //n -> capacidad del tren, m -> número de estaciones, p -> número de pedidos
+    int p;
     //Leer primera línea
-    int p; //n -> capacidad del tren, m -> número de estaciones, p -> número de pedidos
     f >> n >> m >> p;
     if (n == 0 && m == 0 && p == 0)
     {
@@ -173,20 +172,20 @@ bool es_factible(int capacidad_total, vector<int> capacidad_ocupada)
     return true;
 }
 
-int ramificacion_poda(ArbolPeticiones a, int capacidad_total, vector<Peticion> *v, int n_paradas)
+int ramificacion_poda(NodoPeticion a, int capacidad_total, vector<Peticion> *v, int n_paradas)
 {
     unsigned int nivel = 0;
     int U = a.getEstimacion();
     int beneficio = 0;
     int capacidad_disponible = capacidad_total;
     bool izqFactible;
-    priority_queue<ArbolPeticiones, vector<ArbolPeticiones>, LessThanCost> pq;
+    priority_queue<NodoPeticion, vector<NodoPeticion>, LessThanCost> pq;
     //Apilar nodo raíz
     pq.push(a);
     while (!pq.empty())
     {
         //Obtener nodo más prometedor
-        ArbolPeticiones actual = pq.top();
+        NodoPeticion actual = pq.top();
         pq.pop();
         if (actual.getCoste() <= U)
         {
@@ -198,7 +197,7 @@ int ramificacion_poda(ArbolPeticiones a, int capacidad_total, vector<Peticion> *
                 capacidad_tras_anyadir[i] += v->at(nivel).getPasajeros();
             }
 
-            ArbolPeticiones izq(nivel, v->size(), n_paradas); //Se añade la petición del nodo actual
+            NodoPeticion izq(nivel, v->size(), n_paradas); //Se añade la petición del nodo actual
             izq.setDescartados(actual.getDescartados());
             izqFactible = es_factible(capacidad_total, capacidad_tras_anyadir);
             if (izqFactible)
@@ -208,7 +207,7 @@ int ramificacion_poda(ArbolPeticiones a, int capacidad_total, vector<Peticion> *
                 izq.setCapacidad(capacidad_tras_anyadir);
             }
 
-            ArbolPeticiones dch(nivel, v->size(), n_paradas); //No se añade la petición del nodo actual
+            NodoPeticion dch(nivel, v->size(), n_paradas); //No se añade la petición del nodo actual
             dch.setDescartados(actual.getDescartados());
             dch.descartar(nivel);
 
@@ -264,7 +263,7 @@ void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_para
     if (vector->size() > 0)
     {
         //Crear el árbol
-        ArbolPeticiones ap(-1, vector->size(), n_paradas);
+        NodoPeticion ap(-1, vector->size(), n_paradas);
         ap.setEstimacion(funcion_poda(vector, 0, capacidad_total, ap.getDescartados(), ap.getCapacidad()));
         ap.setCoste(funcion_cota(vector, 0, capacidad_total, 0, ap.getDescartados(), ap.getCapacidad()));
         ;
@@ -283,19 +282,14 @@ int main()
     f_entrada.open("datos.txt");
     vector<Peticion> *v = new vector<Peticion>();
     int capacidad_tren, n_paradas;
-    obtenerDatos(f_entrada, v, capacidad_tren, n_paradas);
-    //obtenerDatos(f_entrada, v, capacidad_tren);
-    //obtenerDatos(f_entrada, v, capacidad_tren);
-    //v->clear();
-    //obtenerDatos(f_entrada, v, capacidad_tren);
-    sort(v->begin(), v->end());
-    for (auto i : *v)
+    clock_t t1 = clock();
+    while (obtenerDatos(f_entrada, v, capacidad_tren, n_paradas))
     {
-        i.mostrarPeticion();
+        sort(v->begin(), v->end());
+        calcular_solucion(v, capacidad_tren, n_paradas);
+        v->clear();
     }
-
-    calcular_solucion(v, capacidad_tren, n_paradas);
-
-    //ArbolPeticiones* a = crear_arbol(vector,0);
-    //printTree(a, nullptr, false);
+    clock_t t2 = clock();
+    cout << "Colección de pruebas calculadas en " << (double)(t2 - t1) / CLOCKS_PER_SEC << " segundos" << endl
+         << endl;
 }

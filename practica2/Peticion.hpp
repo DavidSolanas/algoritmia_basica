@@ -74,7 +74,7 @@ int Peticion::getPasajeros() const
 }
 int Peticion::getBeneficio() const
 {
-    return -num_pasajeros * (estacion_llegada - estacion_salida + 1);
+    return -num_pasajeros * (estacion_llegada - estacion_salida);
 }
 void Peticion::mostrarPeticion()
 {
