@@ -191,3 +191,8 @@ bool operator<(const Peticion &p1, const Peticion &p2)
 {
     return p1.getPasajeros() / p1.getDistancia() < p2.getPasajeros() / p2.getDistancia();
 }
+
+bool operator>(const Peticion &p1, const Peticion &p2)
+{
+    return p1.getPasajeros() / p1.getDistancia() > p2.getPasajeros() / p2.getDistancia();
+}

@@ -438,7 +438,7 @@ int main(int argc, char *argv[])
             while (obtenerDatos(f_entrada, v, capacidad_tren, n_paradas))
             {
                 //Ordenar las peticiones según número_pasajeros/distancia del trayecto
-                sort(v->begin(), v->end());
+                sort(v->begin(), v->end(),greater<Peticion>());
                 calcular_solucion(v, capacidad_tren, n_paradas, f_salida, fuerzaBruta);
                 //Borrar el vector de peticiones para incluir las nuevas
                 v->clear();
