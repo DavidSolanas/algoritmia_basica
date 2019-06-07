@@ -268,9 +268,10 @@ bool es_factible(int capacidad_total, vector<int> capacidad_ocupada)
  * capacidad_total: Capacidad total del tren
  * v: Vector de peticiones ordenado por número de pasajeros / distancia del trayecto
  * n_paradas: Número total de estaciones
+ * fuerzaBruta: Indica si utilizar el algoritmo de ramificación y poda o de fuerza bruta para calcular la solución
  * Dado el vector de peticiones, calcula el máximo ingreso total.
  */
-int ramificacion_poda(NodoPeticion a, int capacidad_total, vector<Peticion> *v, int n_paradas)
+int ramificacion_poda(NodoPeticion a, int capacidad_total, vector<Peticion> *v, int n_paradas, bool fuerzaBruta)
 {
     //Indica la petición a tratar
     unsigned int nivel = 0;
@@ -290,7 +291,9 @@ int ramificacion_poda(NodoPeticion a, int capacidad_total, vector<Peticion> *v, 
         //Eliminar nodo de la cola de prioridades
         pq.pop();
         //Comprobar si hay que podar el nodo o no (si su función de cota supera el valor mínimo de poda -> PODAR)
-        if (actual.getCoste() <= U)
+        //Si fuerzaBruta es TRUE nunca habrá poda, solo será TRUE si el usuario ejecuta el programa con el flag
+        // -fb
+        if (fuerzaBruta || actual.getCoste() <= U)
         {
             //Expandir nodo (generar 2 hijos, izq cogiendo la petición, dch sin coger la petición)
             nivel = actual.getId_peticion() + 1;
@@ -387,11 +390,12 @@ int ramificacion_poda(NodoPeticion a, int capacidad_total, vector<Peticion> *v, 
  * capacidad_total: Capacidad total del tren
  * n_paradas: Número total de estaciones
  * f: Fichero de salida para escribir el resultado obtenido
+ * fuerzaBruta: Indica si utilizar el algoritmo de ramificación y poda o de fuerza bruta para calcular la solución
  * Crea el nodo raíz y calcula sus funciones de cota y de poda, y resuelve el problema, calculando
  * el tiempo de ejecución del algoritmo que resuelve el problema y escribiendo en el fichero de salida
  * f el beneficio máximo obtenido y el tiempo de ejecución en segundos.
  */
-void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_paradas, ofstream &f)
+void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_paradas, ofstream &f, bool fuerzaBruta)
 {
     clock_t t_start = clock();
     int ben = 0;
@@ -404,7 +408,7 @@ void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_para
         //Cálculo de la función de cota del nodo
         ap.setCoste(funcion_cota(vector, 0, capacidad_total, ap.getDescartados(), ap.getCapacidad()));
         //Ejecución del algoritmo y obtención del resultado
-        ben = ramificacion_poda(ap, capacidad_total, vector, n_paradas);
+        ben = ramificacion_poda(ap, capacidad_total, vector, n_paradas, fuerzaBruta);
     }
     clock_t t_end = clock();
     //Escribir en el fichero de salida los resultados obtenidos
@@ -418,8 +422,9 @@ void calcular_solucion(vector<Peticion> *vector, int capacidad_total, int n_para
  */
 int main(int argc, char *argv[])
 {
-    if (argc == 3)
+    if (argc >= 3)
     {
+        bool fuerzaBruta = argc == 4 && string(argv[3]) == "-fb";
         ifstream f_entrada;
         ofstream f_salida;
         f_entrada.open(string(argv[1]));
@@ -430,17 +435,14 @@ int main(int argc, char *argv[])
             int capacidad_tren, n_paradas;
             //Al obtener los datos, v contendrá las peticiones, capacidad_tren,
             //la capacidad total y n_paradas el número de estaciones total
-            clock_t t1 = clock();
             while (obtenerDatos(f_entrada, v, capacidad_tren, n_paradas))
             {
                 //Ordenar las peticiones según número_pasajeros/distancia del trayecto
                 sort(v->begin(), v->end());
-                calcular_solucion(v, capacidad_tren, n_paradas, f_salida);
+                calcular_solucion(v, capacidad_tren, n_paradas, f_salida, fuerzaBruta);
                 //Borrar el vector de peticiones para incluir las nuevas
                 v->clear();
             }
-            clock_t t2 = clock();
-            cout << (double)(t2 - t1) / CLOCKS_PER_SEC << endl;
         }
         else
         {
@@ -449,6 +451,6 @@ int main(int argc, char *argv[])
     }
     else
     {
-        cerr << "Numero de argumentos incorrecto: transporte <nombre_fichero_entrada> <nombre_fichero_salida>" << endl;
+        cerr << "Numero de argumentos incorrecto: transporte <nombre_fichero_entrada> <nombre_fichero_salida> [-fb]" << endl;
     }
 }
